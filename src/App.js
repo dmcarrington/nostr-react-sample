@@ -27,21 +27,22 @@ function App() {
 
   useEffect(() => {
     const connectRelay = async () => {
-      const relay = relayInit("wss://relay.snort.social");
-      await relay.connect();
-      relay.on("connect", () => {
-        setRelay(relay);
-      });
-      relay.on("error", () => {
-        console.log("failed to connect");
-      });
+      try {
+        const relay = relayInit("wss://relay.snort.social");
+        await relay.connect();
+        relay.on("connect", () => {
+          setRelay(relay);
+        });
+        relay.on("error", () => {
+          console.log("failed to connect");
+        });
+      } catch (err) {
+        console.log(err);
+      }
     };
 
-    try {
-      connectRelay();
-    } catch (err) {
-      console.log(err);
-    }
+    connectRelay();
+
     localStorage.setItem("sk", sk);
   });
 
@@ -91,7 +92,18 @@ function App() {
 
   return (
     <div>
-      <p>Private key: {sk}</p>
+      <p>
+        Private Key:
+        <input
+          type="text"
+          value={sk}
+          onChange={(e) => {
+            setSk(e.target.value);
+            setPk(getPublicKey(sk));
+          }}
+          size="64"
+        />
+      </p>
       <p>Public key: {pk}</p>
       {relay ? (
         <p>connected to {relay.url}</p>
