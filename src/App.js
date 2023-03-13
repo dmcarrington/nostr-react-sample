@@ -46,6 +46,7 @@ function App() {
     localStorage.setItem("sk", sk);
   });
 
+  // Create a sample event to publish to relay
   var event = {
     kind: 1,
     pubkey: pk,
@@ -67,6 +68,7 @@ function App() {
     });
   };
 
+  // Get our event from relay
   const getEvent = async () => {
     var sub = relay.sub([
       {
@@ -81,6 +83,7 @@ function App() {
     }
   };
 
+  // Get all events from relay
   const getEvents = async () => {
     var events = await relay.list([
       {
