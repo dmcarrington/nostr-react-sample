@@ -9,7 +9,16 @@ import { useState, useEffect } from "react";
 import "./App.css";
 
 function App() {
-  const [sk, setSk] = useState(generatePrivateKey());
+  const [sk, setSk] = useState(() => {
+    const saved = localStorage.getItem("sk");
+    let initialValue = "";
+    if (saved) {
+      initialValue = saved;
+    } else {
+      initialValue = generatePrivateKey();
+    }
+    return initialValue;
+  });
   const [pk, setPk] = useState(getPublicKey(sk));
   const [relay, setRelay] = useState(null);
   const [pubStatus, setPubStatus] = useState("");
@@ -18,7 +27,7 @@ function App() {
 
   useEffect(() => {
     const connectRelay = async () => {
-      const relay = relayInit("wss://relay.damus.io");
+      const relay = relayInit("wss://relay.snort.social");
       await relay.connect();
       relay.on("connect", () => {
         setRelay(relay);
@@ -28,7 +37,12 @@ function App() {
       });
     };
 
-    connectRelay();
+    try {
+      connectRelay();
+    } catch (err) {
+      console.log(err);
+    }
+    localStorage.setItem("sk", sk);
   });
 
   var event = {
